@@ -1,7 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useSpring, useTransform } from 'framer-motion';
 
-// --- COMPONENTS ---
+// --- CUTE ANIMATION COMPONENT ---
+const TennisHeart = () => (
+  <motion.div 
+    animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+    className="relative w-16 h-16 flex items-center justify-center"
+  >
+    {/* The Ball */}
+    <div className="w-12 h-12 bg-[#D4E157] rounded-full border-2 border-white shadow-lg relative overflow-hidden">
+      {/* Tennis Seams */}
+      <div className="absolute inset-0 border-[3px] border-white/40 rounded-full scale-110 translate-x-6"></div>
+      <div className="absolute inset-0 border-[3px] border-white/40 rounded-full scale-110 -translate-x-6"></div>
+    </div>
+    {/* The Floating Hearts */}
+    {[...Array(3)].map((_, i) => (
+      <motion.span
+        key={i}
+        initial={{ opacity: 0, y: 0 }}
+        animate={{ opacity: [0, 1, 0], y: -40, x: (i - 1) * 20 }}
+        transition={{ duration: 2, delay: i * 0.5, repeat: Infinity }}
+        className="absolute text-chettinad-red text-xl"
+      >
+        ❤️
+      </motion.span>
+    ))}
+  </motion.div>
+);
 
 const KolamPattern = ({ className }) => (
   <svg viewBox="0 0 100 100" className={`opacity-10 ${className}`} width="150" height="150">
@@ -19,7 +45,6 @@ const Countdown = () => {
       const now = new Date();
       const difference = target - now;
       if (difference <= 0) return clearInterval(interval);
-      
       setTimeLeft({
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
@@ -44,13 +69,10 @@ const Countdown = () => {
 
 const DrapeOpening = ({ onStart }) => (
   <div className="fixed inset-0 z-[100] flex overflow-hidden">
-    {/* Left Panel */}
     <motion.div exit={{ x: '-100%' }} transition={{ duration: 2.2, ease: [0.45, 0, 0.55, 1] }}
       className="h-full w-1/2 bg-chettinad-red flex items-center justify-end border-r-2 border-terracotta/30">
       <motion.div exit={{ opacity: 0, x: -20 }} className="text-sand font-display text-7xl md:text-9xl mr-4 z-10 font-bold">H</motion.div>
     </motion.div>
-    
-    {/* Right Panel */}
     <motion.div exit={{ x: '100%' }} transition={{ duration: 2.2, ease: [0.45, 0, 0.55, 1] }}
       className="h-full w-1/2 bg-chettinad-red flex items-center justify-start border-l-2 border-terracotta/30">
       <motion.div exit={{ opacity: 0, x: 20 }} className="flex items-baseline">
@@ -58,7 +80,6 @@ const DrapeOpening = ({ onStart }) => (
         <span className="text-sand font-display text-7xl md:text-9xl z-10 font-bold">S</span>
       </motion.div>
     </motion.div>
-
     <motion.div exit={{ opacity: 0 }} className="absolute inset-0 z-[110] flex flex-col items-center justify-center">
       <button onClick={onStart} className="mt-72 px-12 py-4 border border-sand/40 text-sand font-body tracking-[0.4em] text-[10px] uppercase hover:bg-sand hover:text-chettinad-red transition-all duration-700 backdrop-blur-md rounded-full shadow-2xl">
         Ammantranam
@@ -91,15 +112,16 @@ export default function App() {
         {/* CHAPTER 1: THE START */}
         <Section>
           <KolamPattern className="absolute top-10 left-10 text-chettinad-red" />
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.5 }} className="text-center z-10">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.5 }} className="text-center z-10 flex flex-col items-center">
             <span className="text-chettinad-red font-body tracking-[0.4em] text-[10px] uppercase mb-4 block opacity-60">Karaikudi • 2014</span>
             <h1 className="text-6xl md:text-8xl font-display text-chettinad-red mb-6">The First Rally</h1>
-            <p className="text-charcoal max-w-xs mx-auto leading-loose text-sm opacity-80 italic">
+            
+            {/* CUTE ANIMATION HERE */}
+            <TennisHeart />
+
+            <p className="mt-6 text-charcoal max-w-xs mx-auto leading-loose text-sm opacity-80 italic">
               Where the echoes of tennis balls at Alagappa Chettiar became the rhythm of our hearts.
             </p>
-          </motion.div>
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute bottom-[-50px] right-[-50px]">
-            <KolamPattern className="text-terracotta opacity-5" />
           </motion.div>
         </Section>
 
@@ -119,25 +141,33 @@ export default function App() {
               </p>
             </div>
           </motion.div>
-          <KolamPattern className="absolute bottom-10 left-10 text-sand opacity-10" />
         </Section>
 
-        {/* CHAPTER 3: THE COMING HOME */}
-        <Section>
-          <motion.div initial={{ scale: 0.95, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} className="text-center">
-             <span className="text-terracotta font-body tracking-[0.5em] text-[10px] uppercase mb-6 block">Chennai Photoshoot</span>
-             <div className="w-64 h-80 border-4 border-double border-chettinad-red/20 flex items-center justify-center bg-sand">
-                <span className="text-chettinad-red/20 font-display italic">Traditional Frames</span>
-             </div>
-             <p className="mt-8 text-chettinad-red font-display text-2xl italic">"From Karaikudi with Love"</p>
-          </motion.div>
+        {/* CHAPTER 3: THE TEMPLE PHOTO (MODERN STYLE) */}
+        <Section className="p-0">
+           <div className="relative w-full h-full flex items-center justify-center">
+              {/* IMAGE PLACEHOLDER: Replace 'temple.jpg' with your filename */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                className="absolute inset-0 bg-cover bg-center grayscale contrast-125 brightness-75"
+                style={{ backgroundImage: "url('/temple.jpg')" }} 
+              />
+              <div className="absolute inset-0 bg-chettinad-red/40 mix-blend-multiply" />
+              
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                className="relative z-10 text-center bg-sand/90 p-8 backdrop-blur-md"
+              >
+                <span className="text-chettinad-red font-body tracking-[0.4em] text-[10px] uppercase block mb-2">Our Roots</span>
+                <h3 className="text-chettinad-red font-display text-4xl italic">Chennai</h3>
+              </motion.div>
+           </div>
         </Section>
 
         {/* CHAPTER 4: THE WEDDING */}
         <Section className="bg-sand relative">
-          {/* Decorative Border Motif */}
-          <div className="absolute top-0 w-full h-4 bg-[url('https://www.transparenttextures.com/patterns/pinstripe.png')] opacity-10" />
-          
           <motion.div initial={{ y: 50, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} className="text-center z-10">
             <h2 className="text-5xl md:text-7xl font-display text-chettinad-red mb-4">June 25, 2026</h2>
             <p className="text-terracotta font-body tracking-[0.4em] text-[10px] uppercase font-bold">Save Our Date • Chennai</p>
