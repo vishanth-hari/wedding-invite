@@ -1,60 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 
 // --- COMPONENTS ---
 
-const DrapeOpening = ({ onStart }) => {
+const KolamPattern = ({ className }) => (
+  <svg viewBox="0 0 100 100" className={`opacity-10 ${className}`} width="150" height="150">
+    <path d="M50 10 L60 40 L90 50 L60 60 L50 90 L40 60 L10 50 L40 40 Z" fill="none" stroke="currentColor" strokeWidth="1" />
+    <circle cx="50" cy="50" r="5" fill="currentColor" />
+  </svg>
+);
+
+const Countdown = () => {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
+
+  useEffect(() => {
+    const target = new Date("2026-06-25T00:00:00"); 
+    const interval = setInterval(() => {
+      const now = new Date();
+      const difference = target - now;
+      if (difference <= 0) return clearInterval(interval);
+      
+      setTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        mins: Math.floor((difference / 1000 / 60) % 60),
+        secs: Math.floor((difference / 1000) % 60),
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-[100] flex overflow-hidden">
-      {/* Left Panel */}
-      <motion.div
-        exit={{ x: '-100%' }}
-        transition={{ duration: 2.5, ease: [0.45, 0, 0.55, 1] }}
-        className="h-full w-1/2 bg-chettinad-red flex items-center justify-end relative border-r border-sand/10"
-      >
-        <motion.div 
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 1 }}
-          className="text-sand font-display text-6xl md:text-8xl mr-2 z-10 font-bold"
-        >
-          H
-        </motion.div>
-      </motion.div>
-
-      {/* Right Panel */}
-      <motion.div
-        exit={{ x: '100%' }}
-        transition={{ duration: 2.5, ease: [0.45, 0, 0.55, 1] }}
-        className="h-full w-1/2 bg-chettinad-red flex items-center justify-start relative border-l border-sand/10"
-      >
-        <motion.div 
-          exit={{ opacity: 0, x: 20 }}
-          transition={{ duration: 1 }}
-          className="flex items-baseline"
-        >
-          <span className="text-terracotta font-display text-4xl md:text-5xl mr-2 font-light italic">&</span>
-          <span className="text-sand font-display text-6xl md:text-8xl z-10 font-bold">S</span>
-        </motion.div>
-      </motion.div>
-
-      {/* Interaction Button */}
-      <motion.div 
-        exit={{ opacity: 0, y: 20 }}
-        className="absolute inset-0 z-[110] flex items-center justify-center"
-      >
-        <button 
-          onClick={onStart}
-          className="mt-64 px-10 py-4 border border-sand/30 text-sand font-body tracking-[0.4em] text-[10px] uppercase hover:bg-sand hover:text-chettinad-red transition-all duration-700 backdrop-blur-md rounded-full"
-        >
-          Enter the Journey
-        </button>
-      </motion.div>
+    <div className="flex gap-6 mt-10">
+      {Object.entries(timeLeft).map(([label, value]) => (
+        <div key={label} className="flex flex-col items-center">
+          <span className="text-3xl font-display font-bold text-chettinad-red">{value}</span>
+          <span className="text-[9px] uppercase tracking-[0.2em] text-terracotta font-semibold">{label}</span>
+        </div>
+      ))}
     </div>
   );
 };
 
+const DrapeOpening = ({ onStart }) => (
+  <div className="fixed inset-0 z-[100] flex overflow-hidden">
+    {/* Left Panel */}
+    <motion.div exit={{ x: '-100%' }} transition={{ duration: 2.2, ease: [0.45, 0, 0.55, 1] }}
+      className="h-full w-1/2 bg-chettinad-red flex items-center justify-end border-r-2 border-terracotta/30">
+      <motion.div exit={{ opacity: 0, x: -20 }} className="text-sand font-display text-7xl md:text-9xl mr-4 z-10 font-bold">H</motion.div>
+    </motion.div>
+    
+    {/* Right Panel */}
+    <motion.div exit={{ x: '100%' }} transition={{ duration: 2.2, ease: [0.45, 0, 0.55, 1] }}
+      className="h-full w-1/2 bg-chettinad-red flex items-center justify-start border-l-2 border-terracotta/30">
+      <motion.div exit={{ opacity: 0, x: 20 }} className="flex items-baseline">
+        <span className="text-terracotta font-display text-4xl md:text-6xl mr-2 font-light italic">&</span>
+        <span className="text-sand font-display text-7xl md:text-9xl z-10 font-bold">S</span>
+      </motion.div>
+    </motion.div>
+
+    <motion.div exit={{ opacity: 0 }} className="absolute inset-0 z-[110] flex flex-col items-center justify-center">
+      <button onClick={onStart} className="mt-72 px-12 py-4 border border-sand/40 text-sand font-body tracking-[0.4em] text-[10px] uppercase hover:bg-sand hover:text-chettinad-red transition-all duration-700 backdrop-blur-md rounded-full shadow-2xl">
+        Ammantranam
+      </button>
+    </motion.div>
+  </div>
+);
+
 const Section = ({ children, className }) => (
-  <section className={`snap-start min-h-screen w-full flex flex-col items-center justify-center p-8 relative overflow-hidden ${className}`}>
+  <section className={`snap-start min-h-screen w-full flex flex-col items-center justify-center p-10 relative overflow-hidden ${className}`}>
     {children}
   </section>
 );
@@ -63,128 +77,73 @@ const Section = ({ children, className }) => (
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
-
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 50,
-    damping: 20,
-  });
+  const scaleX = useSpring(scrollYProgress, { stiffness: 40, damping: 25 });
 
   return (
-    <main className="relative bg-sand selection:bg-chettinad-red selection:text-sand font-body">
+    <main className="relative bg-sand font-body selection:bg-chettinad-red selection:text-sand">
+      {isOpen && <motion.div className="fixed top-0 left-0 right-0 h-1.5 bg-chettinad-red z-[150] origin-left" style={{ scaleX }} />}
       
-      {isOpen && (
-        <motion.div 
-          className="fixed top-0 left-0 right-0 h-1.5 bg-chettinad-red z-[150] origin-left"
-          style={{ scaleX }}
-        />
-      )}
-
-      <AnimatePresence>
-        {!isOpen && <DrapeOpening onStart={() => setIsOpen(true)} />}
-      </AnimatePresence>
+      <AnimatePresence>{!isOpen && <DrapeOpening onStart={() => setIsOpen(true)} />}</AnimatePresence>
 
       <div className={`h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth ${!isOpen ? 'overflow-hidden' : ''}`}>
         
-        {/* SECTION 1: THE MEET */}
+        {/* CHAPTER 1: THE START */}
         <Section>
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5 }}
-            className="text-center"
-          >
-            <span className="text-chettinad-red font-body tracking-[0.4em] text-[10px] uppercase mb-6 block opacity-60">
-              Karaikudi • 2014
-            </span>
-            <h1 className="text-5xl md:text-7xl font-display text-chettinad-red mb-6">
-              Vishanth <span className="italic text-terracotta font-light">&</span> Shobika
-            </h1>
-            <p className="text-charcoal font-body max-w-xs mx-auto leading-loose opacity-80 text-sm">
-              It began at Alagappa Chettiar. 
-              A journey born on the tennis courts, destined for the world.
+          <KolamPattern className="absolute top-10 left-10 text-chettinad-red" />
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.5 }} className="text-center z-10">
+            <span className="text-chettinad-red font-body tracking-[0.4em] text-[10px] uppercase mb-4 block opacity-60">Karaikudi • 2014</span>
+            <h1 className="text-6xl md:text-8xl font-display text-chettinad-red mb-6">The First Rally</h1>
+            <p className="text-charcoal max-w-xs mx-auto leading-loose text-sm opacity-80 italic">
+              Where the echoes of tennis balls at Alagappa Chettiar became the rhythm of our hearts.
             </p>
           </motion.div>
-          <div className="absolute bottom-10 animate-bounce text-chettinad-red/40 text-[9px] tracking-[0.3em] uppercase">
-            Scroll to Explore
-          </div>
+          <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute bottom-[-50px] right-[-50px]">
+            <KolamPattern className="text-terracotta opacity-5" />
+          </motion.div>
         </Section>
 
-        {/* SECTION 2: LONG DISTANCE */}
+        {/* CHAPTER 2: THE LONG DISTANCE */}
         <Section className="bg-chettinad-red text-sand">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 2 }}
-            className="text-center"
-          >
-            <h2 className="text-4xl font-display mb-12">The Long Distance</h2>
-            <div className="space-y-8 text-[10px] tracking-[0.2em] uppercase opacity-80">
-              <div className="flex items-center justify-between w-72 border-b border-sand/10 pb-4">
-                <span className="font-bold">IIT Indore</span>
-                <span className="text-terracotta text-lg">→</span>
-                <span className="font-bold">Germany</span>
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 2 }} className="text-center">
+            <h2 className="text-5xl font-display mb-10">Across Continents</h2>
+            <div className="flex flex-col gap-8 items-center font-display italic text-lg">
+              <div className="flex items-center gap-4">
+                <span>IIT Indore</span>
+                <span className="text-terracotta text-2xl">→</span>
+                <span>Germany</span>
               </div>
-              <div className="flex items-center justify-between w-72 border-b border-sand/10 pb-4">
-                <span className="font-bold">UPSC Prep</span>
-                <span className="text-terracotta text-lg">•</span>
-                <span className="font-bold">3 Years</span>
-              </div>
+              <div className="w-16 h-px bg-sand/20" />
+              <p className="max-w-xs text-sm font-body not-italic opacity-70 tracking-widest uppercase">
+                Eight years of dreams, distance, and devotion.
+              </p>
             </div>
-            <p className="mt-12 max-w-xs mx-auto italic font-display text-lg opacity-70">
-              "Distance means so little when someone means so much."
-            </p>
+          </motion.div>
+          <KolamPattern className="absolute bottom-10 left-10 text-sand opacity-10" />
+        </Section>
+
+        {/* CHAPTER 3: THE COMING HOME */}
+        <Section>
+          <motion.div initial={{ scale: 0.95, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} className="text-center">
+             <span className="text-terracotta font-body tracking-[0.5em] text-[10px] uppercase mb-6 block">Chennai Photoshoot</span>
+             <div className="w-64 h-80 border-4 border-double border-chettinad-red/20 flex items-center justify-center bg-sand">
+                <span className="text-chettinad-red/20 font-display italic">Traditional Frames</span>
+             </div>
+             <p className="mt-8 text-chettinad-red font-display text-2xl italic">"From Karaikudi with Love"</p>
           </motion.div>
         </Section>
 
-        {/* SECTION 3: THE BREAKTHROUGH */}
-        <Section>
-          <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-            <motion.div 
-              initial={{ x: -50, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              className="bg-charcoal p-8 text-sand flex flex-col justify-center rounded-sm"
-            >
-              <span className="text-4xl font-display text-terracotta">18</span>
-              <span className="text-[9px] uppercase tracking-widest mt-2 opacity-60">Months of Search</span>
-            </motion.div>
-            <motion.div 
-              initial={{ x: 50, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              className="border border-chettinad-red p-8 text-chettinad-red flex flex-col justify-center rounded-sm"
-            >
-              <span className="text-4xl font-display">01</span>
-              <span className="text-[9px] uppercase tracking-widest mt-2 opacity-60">Dream Career</span>
-            </motion.div>
-            <motion.div 
-              initial={{ y: 50, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="col-span-2 bg-chettinad-red p-10 text-sand text-center rounded-sm"
-            >
-              <h3 className="text-2xl font-display mb-4 italic">The Breakthrough</h3>
-              <p className="text-xs opacity-80 leading-relaxed font-body tracking-wide">
-                Six months ago, the final piece fell into place. 
-                Germany is now the beginning of our forever.
-              </p>
-            </motion.div>
-          </div>
-        </Section>
-
-        {/* SECTION 4: THE BIG REVEAL */}
-        <Section className="bg-sand">
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            className="text-center border-[0.5px] border-chettinad-red/30 p-16 relative"
-          >
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-sand px-6 text-chettinad-red font-semibold tracking-[0.4em] text-[9px] uppercase">
-              Save The Date
-            </div>
-            <h2 className="text-5xl font-display text-chettinad-red mb-4 uppercase tracking-tighter">Coming Home</h2>
-            <p className="text-charcoal font-body mb-10 tracking-[0.3em] text-[10px] opacity-60 uppercase">July 2026 • Chennai</p>
-            <div className="text-chettinad-red text-xl font-display italic">
-              Formal Invitation to Follow
+        {/* CHAPTER 4: THE WEDDING */}
+        <Section className="bg-sand relative">
+          {/* Decorative Border Motif */}
+          <div className="absolute top-0 w-full h-4 bg-[url('https://www.transparenttextures.com/patterns/pinstripe.png')] opacity-10" />
+          
+          <motion.div initial={{ y: 50, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} className="text-center z-10">
+            <h2 className="text-5xl md:text-7xl font-display text-chettinad-red mb-4">June 25, 2026</h2>
+            <p className="text-terracotta font-body tracking-[0.4em] text-[10px] uppercase font-bold">Save Our Date • Chennai</p>
+            <Countdown />
+            <div className="mt-16 px-10 py-4 border-2 border-chettinad-red text-chettinad-red font-display italic text-xl">
+              We're Getting Married!
             </div>
           </motion.div>
         </Section>
