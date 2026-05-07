@@ -126,18 +126,39 @@ export default function App() {
       <AnimatePresence>
         {!isOpen && (
           <div className="fixed inset-0 z-[200] flex overflow-hidden bg-[#1a0507]">
-            {/* High Contrast Content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center z-[210] p-10 pointer-events-none">
+            {/* High Contrast Content Overlay */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center z-[210] p-6 pointer-events-none">
+              
+              {/* Circular Frame for Couple Image */}
+              <motion.div 
+                exit={{ opacity: 0, y: -20 }} 
+                transition={{ duration: 0.5 }}
+                className="mb-6 relative w-48 h-48 md:w-64 md:h-64"
+              >
+                {/* Decorative Gold Border Frame */}
+                <div className="absolute inset-0 rounded-full border-4 border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.5)] z-20" />
+                <div className="absolute -inset-2 rounded-full border border-[#D4AF37]/30 z-10" />
+                
+                {/* Image Container */}
+                <div className="w-full h-full rounded-full overflow-hidden bg-sand border-2 border-sand relative z-0">
+                  <img 
+                    src="/couple.png" 
+                    alt="Vishanth and Shobika" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </motion.div>
+
               <motion.div exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.5 }}>
-                <h1 className="text-sand font-display text-8xl md:text-[140px] font-bold text-center leading-tight drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)]">
+                <h1 className="text-sand font-display text-7xl md:text-[120px] font-bold text-center leading-tight drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)]">
                   H<span className="text-terracotta font-light italic">&</span>S
                 </h1>
-                <div className="h-1 w-24 bg-terracotta mx-auto my-6 rounded-full shadow-lg" />
+                <div className="h-1 w-24 bg-terracotta mx-auto my-4 rounded-full shadow-lg" />
               </motion.div>
               
               <button 
                 onClick={() => setIsOpen(true)} 
-                className="pointer-events-auto px-16 py-5 bg-sand text-chettinad-red font-body tracking-[0.4em] text-[11px] uppercase hover:scale-105 transition-all duration-500 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.5)] mt-12 font-black border-2 border-sand"
+                className="pointer-events-auto px-12 py-4 bg-sand text-chettinad-red font-body tracking-[0.4em] text-[10px] md:text-[11px] uppercase hover:scale-105 transition-all duration-500 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.5)] mt-6 font-black border-2 border-sand"
               >
                 ENTER THE JOURNEY
               </button>
@@ -183,7 +204,7 @@ export default function App() {
         </Section>
 
         {/* CHAPTER 2: THE FEAST (Menu) */}
-        <Section className="bg-chettinad-red text-sand">
+        <Section className="bg-chettinad-red text-sand" bgImage="/bg2.jpg">
           <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-black/10 p-8 rounded-sm backdrop-blur-sm">
             <h2 className="text-4xl font-display mb-10 italic">The Traditional Feast</h2>
             <div className="space-y-6">
@@ -206,7 +227,7 @@ export default function App() {
         </Section>
 
         {/* CHAPTER 3: THE VENUE */}
-        <Section bgImage="/bg2.jpg">
+        <Section bgImage="/bg3.jpg">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="w-full max-w-lg">
             <h2 className="text-chettinad-red font-display text-5xl mb-12 italic underline decoration-terracotta/30 underline-offset-8">The Venue</h2>
             <div className="space-y-12">
@@ -232,7 +253,7 @@ export default function App() {
         </Section>
 
         {/* CHAPTER 4: THE COUNTDOWN */}
-        <Section bgImage="/bg3.jpg" className="bg-sand">
+        <Section bgImage="/bg4.jpg" className="bg-sand">
           <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} className="flex flex-col items-center w-full">
             <h2 className="text-5xl md:text-8xl font-display text-chettinad-red mb-4 uppercase tracking-tighter">June 25, 2026</h2>
             <p className="text-terracotta font-body tracking-[0.5em] text-[11px] uppercase font-black mb-4">Save Our Date</p>
